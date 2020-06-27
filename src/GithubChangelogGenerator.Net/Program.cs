@@ -76,7 +76,7 @@ namespace GithubChangelogGenerator.Net
             _console.WriteLine("Done", Success);
             
             _console.Write("Loading Repository Commits: ", NoStatus);
-            var commits = await _githubService.GetCommitsOfUserRepository();
+            var commits = await _githubService.GetCommitsOfUserRepositoryForSpecifiedBranch();
             _console.WriteLine("Done", Success);
             
             _console.Write("Loading Repository Releases: ", NoStatus);
@@ -107,7 +107,12 @@ namespace GithubChangelogGenerator.Net
 
         private async Task UpdateChangelogFileInRepository(IRepositoriesClient repositoriesClient, Repository repository, string document)
         {
-            var existingChangelog = (await repositoriesClient.Content.GetAllContents(repository.Id))
+            var branch = string.IsNullOrWhiteSpace(Branch)
+                ? repository.DefaultBranch
+                : Branch;
+            
+            var existingChangelog = 
+                (await repositoriesClient.Content.GetAllContentsByRef(repository.Id, branch))
                 .FirstOrDefault(any => any.Name == "CHANGELOG.md");
             
             if (existingChangelog is null)
@@ -117,9 +122,7 @@ namespace GithubChangelogGenerator.Net
                     "CHANGELOG.md",
                     new CreateFileRequest("Added CHANGELOG.md",
                         document,
-                        string.IsNullOrWhiteSpace(Branch)
-                            ? repository.DefaultBranch
-                            : Branch));
+                        branch));
             }
             else
             {
@@ -129,9 +132,7 @@ namespace GithubChangelogGenerator.Net
                     new UpdateFileRequest("Updated CHANGELOG.md",
                         document,
                         existingChangelog.Sha,
-                        string.IsNullOrWhiteSpace(Branch)
-                            ? repository.DefaultBranch
-                            : Branch));
+                        branch));
             }
         }
     }
