@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "GithubChangelogGenerator.Net": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
