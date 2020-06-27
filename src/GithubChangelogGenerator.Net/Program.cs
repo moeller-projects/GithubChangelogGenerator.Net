@@ -119,7 +119,7 @@ namespace GithubChangelogGenerator.Net
                         document,
                         string.IsNullOrWhiteSpace(Branch)
                             ? repository.DefaultBranch
-                            : Arguments.Arguments.Branch));
+                            : Branch));
             }
             else
             {
@@ -131,7 +131,7 @@ namespace GithubChangelogGenerator.Net
                         existingChangelog.Sha,
                         string.IsNullOrWhiteSpace(Branch)
                             ? repository.DefaultBranch
-                            : Arguments.Arguments.Branch));
+                            : Branch));
             }
         }
     }
