@@ -115,7 +115,11 @@ namespace GithubChangelogGenerator.Net
                 await repositoriesClient.Content.CreateFile(
                     repository.Id,
                     "CHANGELOG.md",
-                    new CreateFileRequest("Added CHANGELOG.md", document, repository.DefaultBranch));
+                    new CreateFileRequest("Added CHANGELOG.md",
+                        document,
+                        string.IsNullOrWhiteSpace(Branch)
+                            ? repository.DefaultBranch
+                            : Arguments.Arguments.Branch));
             }
             else
             {
@@ -125,7 +129,9 @@ namespace GithubChangelogGenerator.Net
                     new UpdateFileRequest("Updated CHANGELOG.md",
                         document,
                         existingChangelog.Sha,
-                        repository.DefaultBranch));
+                        string.IsNullOrWhiteSpace(Branch)
+                            ? repository.DefaultBranch
+                            : Arguments.Arguments.Branch));
             }
         }
     }

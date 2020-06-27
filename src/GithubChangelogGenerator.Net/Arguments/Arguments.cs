@@ -36,6 +36,12 @@ namespace GithubChangelogGenerator.Net.Arguments
             Description = "Github Repository",
             ShortName = "r", LongName = "repository", ValueName = "REPOSITORY")]
         public string? Repository { get; } = null!;
+        
+        [Option(
+            CommandOptionType.SingleValue,
+            Description = "Github Repository Branch",
+            ShortName = "b", LongName = "branch", ValueName = "BRANCH")]
+        public static string? Branch { get; } = null!;
 
         #endregion
 
