@@ -38,30 +38,35 @@ namespace GithubChangelogGenerator.Net.Parser
             var document = new MarkdownDocument(Arguments.Arguments.Header);
             var unreleasedSection = await GenerateUnreleasedSection(
                 commits,
-                releases.Max(release => release.CreatedAt).UtcDateTime);
+                releases.Any()
+                    ? releases.Max(release => release.CreatedAt).UtcDateTime
+                    : DateTime.MinValue);
             document.AddSection(unreleasedSection);
 
-            for (var releaseNumber = 0; releaseNumber < releases.Count(); releaseNumber++)
+            if (releases.Any())
             {
-                var release = releases.ElementAtOrDefault(releaseNumber);
-                var previousRelease = releases.ElementAtOrDefault(releaseNumber + 1);
+                for (var releaseNumber = 0; releaseNumber < releases.Count(); releaseNumber++)
+                {
+                    var release = releases.ElementAtOrDefault(releaseNumber);
+                    var previousRelease = releases.ElementAtOrDefault(releaseNumber + 1);
 
-                var tag = tags.FirstOrDefault(f => f.Name == release.TagName);
-                var previousTag = tags.FirstOrDefault(f => f.Name == previousRelease?.TagName);
+                    var tag = tags.FirstOrDefault(f => f.Name == release.TagName);
+                    var previousTag = tags.FirstOrDefault(f => f.Name == previousRelease?.TagName);
 
-                var tagCommit = commits.FirstOrDefault(f => f.Sha == tag.Commit.Sha);
-                var previousTagCommit = commits.FirstOrDefault(f => f.Sha == previousTag?.Commit.Sha);
+                    var tagCommit = commits.FirstOrDefault(f => f.Sha == tag.Commit.Sha);
+                    var previousTagCommit = commits.FirstOrDefault(f => f.Sha == previousTag?.Commit.Sha);
 
-                var commitsInRelease = commits.WhereDateIsBetween(
-                        commit => commit.Commit.Committer.Date.UtcDateTime,
-                        previousTagCommit?.Commit.Committer.Date.UtcDateTime ?? DateTime.MinValue,
-                        tagCommit.Commit.Committer.Date.UtcDateTime)
-                    .OrderByDescending(commit => commit.Commit.Committer.Date.UtcDateTime).ToArray();
+                    var commitsInRelease = commits.WhereDateIsBetween(
+                            commit => commit.Commit.Committer.Date.UtcDateTime,
+                            previousTagCommit?.Commit.Committer.Date.UtcDateTime ?? DateTime.MinValue,
+                            tagCommit.Commit.Committer.Date.UtcDateTime)
+                        .OrderByDescending(commit => commit.Commit.Committer.Date.UtcDateTime).ToArray();
 
-                var changes = await Parse(commitsInRelease);
-                var releaseSection = $"## [{release.TagName}] - {(release.CreatedAt).UtcDateTime:yyyy-mm-dd}" +
-                                     Environment.NewLine;
-                document.AddSection(releaseSection + changes);
+                    var changes = await Parse(commitsInRelease);
+                    var releaseSection = $"## [{release.TagName}] - {(release.CreatedAt).UtcDateTime:yyyy-mm-dd}" +
+                                         Environment.NewLine;
+                    document.AddSection(releaseSection + changes);
+                }
             }
 
             document.AddSection(GenerateLinkSection(releases, repository));
@@ -137,6 +142,9 @@ namespace GithubChangelogGenerator.Net.Parser
             builder.AppendLine($"[{Arguments.Arguments.UnreleasedSectionLabel}]: " +
                                $"https://github.com/{repository.Owner.Login}/{repository.Name}/compare/{previousReleaseTag}...HEAD");
 
+            if (!releases.Any())
+                return builder.ToString();
+            
             for (var releaseNumber = 0; releaseNumber < releases.Count(); releaseNumber++)
             {
                 var release = releases.ElementAtOrDefault(releaseNumber);
