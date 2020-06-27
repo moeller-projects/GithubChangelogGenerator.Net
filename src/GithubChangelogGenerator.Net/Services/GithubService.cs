@@ -33,10 +33,15 @@ namespace GithubChangelogGenerator.Net.Services
         public async Task<Repository> GetUserRepository()
             => await _githubClient.Repository.Get(_config["username"], _config["repository"]);
 
-        public async Task<IReadOnlyList<GitHubCommit>> GetCommitsOfUserRepository()
+        public async Task<IReadOnlyList<GitHubCommit>> GetCommitsOfUserRepositoryForSpecifiedBranch()
         {
             var repository = await GetUserRepository();
-            return await _githubClient.Repository.Commit.GetAll(repository.Id);
+            return await _githubClient.Repository.Commit.GetAll(repository.Id, new CommitRequest
+            {
+                Sha = string.IsNullOrWhiteSpace(_config[nameof(Arguments.Arguments.Branch)])
+                ? repository.DefaultBranch
+                : _config[nameof(Arguments.Arguments.Branch)]
+            });
         }
 
         public async Task<IReadOnlyList<Release>> GetReleasesOfUserRepository()

@@ -8,7 +8,7 @@ namespace GithubChangelogGenerator.Net.Services
     {
         public IGitHubClient GetGithubClient();
         public Task<Repository> GetUserRepository();
-        public Task<IReadOnlyList<GitHubCommit>> GetCommitsOfUserRepository();
+        public Task<IReadOnlyList<GitHubCommit>> GetCommitsOfUserRepositoryForSpecifiedBranch();
         public Task<IReadOnlyList<Release>> GetReleasesOfUserRepository();
         public Task<IReadOnlyList<RepositoryTag>> GetTagsOfUserRepository();
     }
