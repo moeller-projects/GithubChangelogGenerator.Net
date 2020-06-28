@@ -8,11 +8,11 @@ on:
 
 jobs:
   build:
-    name: Build and push Docker image
+    name: "Build and push Docker image"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Build and push Docker images
+    - name: "Build and push Docker images"
     - uses: docker/build-push-action@v1.1.0
       with:
         username: ${{secrets.DOCKER_USERNAME}}
@@ -22,6 +22,6 @@ jobs:
         path: .
         dockerfile: src/GithubChangelogGenerator.Net/Dockerfile
         always_pull: true
-        labels: build-date=$(date +%Y-%m-%d %H:%M),name=${{secrets.GITHUB_REPOSITORY}},vcs-url=https://github.com/${{secrets.GITHUB_REPOSITORY}},url=https://getmoeller.com,vendor=Lukas Möller,vcs-ref=${{secrets.GITHUB_SHA}},version=$(date +%Y.%m.%d.%H%M),description=Docker Image to automatically generate the GitHub changelog
+        labels: build-date=$(date +%Y-%m-%d %H:%M),name=${{secrets.GITHUB_REPOSITORY}},vcs-url=https://github.com/${{secrets.GITHUB_REPOSITORY}},url=https://getmoeller.com,vendor=Lukas Möller,vcs-ref=${{secrets.GITHUB_SHA}},version=$(date +%Y.%m.%d.%H%M),description="Docker Image to automatically generate the GitHub changelog"
         add_git_labels: true
         push: true
