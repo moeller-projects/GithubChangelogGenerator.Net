@@ -20,7 +20,7 @@ jobs:
         username: ${{secrets.DOCKER_USERNAME}}
         password: ${{secrets.DOCKER_PASSWORD}}
         repository: lukasmoeller/github-changelog-generator-net
-        tags: ${{$(date +%Y.%m.%d.%H%M)}},latest,lts
+        tags: ${{date +%Y.%m.%d.%H%M}},latest,lts
         path: .
         dockerfile: src/GithubChangelogGenerator.Net/Dockerfile
         always_pull: true
