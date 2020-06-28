@@ -102,6 +102,7 @@ namespace GithubChangelogGenerator.Net.Parser
 
                 builder.AppendLine($"### {label}");
                 var changes = matchingCommits
+                    .OrderByDescending(commit => commit.Commit.Author?.Date.UtcDateTime ?? commit.Commit.Committer.Date.UtcDateTime)
                     .GroupBy(commit => commit.Commit.Message)
                     .Select(commit => commit.First())
                     .Aggregate(string.Empty,
