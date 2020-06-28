@@ -2,9 +2,9 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, dev ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, dev ]
 
 jobs:
   build:
@@ -41,7 +41,8 @@ jobs:
         username: ${{secrets.DOCKER_USERNAME}}
         password: ${{secrets.DOCKER_PASSWORD}}
         repository: lukasmoeller/github-changelog-generator-net
-        tags: ${{ steps.datetime-version.output.version }},${{ steps.semantic-version.output.version }},latest,lts
+        tags: latest,lts #${{ steps.datetime-version.output.version }},${{ steps.semantic-version.output.version }},latest,lts
+        tag_with_ref: true
         path: .
         dockerfile: src/GithubChangelogGenerator.Net/Dockerfile
         always_pull: true
