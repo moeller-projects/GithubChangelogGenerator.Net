@@ -1,0 +1,49 @@
+name: Docker Image CI
+
+on:
+  push:
+    tags: v*
+
+jobs:
+  build:
+    name: "Build and push Docker image"
+    runs-on: ubuntu-latest
+    steps:
+    - name: "Checkout Source Code"
+      uses: actions/checkout@v2
+    
+    - name: Get Current DateTime formatted as Version
+      id: datetime-version
+      run: |
+        echo '::set-output name=version::$(date +%Y.%m.%d.%H%M)'
+        echo '::set-output name=datetime::$(date +%Y-%m-%d %H:%M)'
+      
+    - name: Generate Semantic Version
+      id: semantic-version
+      uses: PaulHatch/semantic-version@v2.1.1
+      with:
+        branch: master
+        tag_prefix: v
+        # a string which, if present in a git commit, indicates that a change represents a major (breaking) change
+        #major_pattern: # default is (MAJOR)
+        # a string which, if present in a git commit, indicates that a change represents a minor (feature) change
+        #minor_pattern: # default is (MINOR)
+        # Pattern to use when formatting output version
+        #format: # default is ${major}.${minor}.${patch}
+        # Path to check for changes. If any changes are detected in the path the 'changed' output will true. Enter multiple paths separated by spaces.
+        #change_path: # optional
+      
+    - name: "Build and push Docker images"
+      uses: docker/build-push-action@v1.1.0
+      with:
+        username: ${{secrets.DOCKER_USERNAME}}
+        password: ${{secrets.DOCKER_PASSWORD}}
+        repository: lukasmoeller/github-changelog-generator-net
+        tags: lts #${{ steps.datetime-version.output.version }},${{ steps.semantic-version.output.version }},latest,lts
+        tag_with_ref: true
+        path: .
+        dockerfile: src/GithubChangelogGenerator.Net/Dockerfile
+        always_pull: true
+        labels: build-date=${{ steps.datetime-version.output.datetime }},name=${{secrets.GITHUB_REPOSITORY}},vcs-url=https://github.com/${{secrets.GITHUB_REPOSITORY}},url=https://getmoeller.com,vendor=Lukas Möller,vcs-ref=${{secrets.GITHUB_SHA}},version=${{ steps.datetime-version.output.version }},description="Docker Image to automatically generate the GitHub changelog"
+        add_git_labels: true
+        push: true

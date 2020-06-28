@@ -1,0 +1,45 @@
+name: Release CI
+
+on:
+  pull_request:
+    types: [ closed ]
+    branches: [ master, dev, hotfix/*, bug/* ]
+
+jobs:
+  release:
+    name: "Create Release for Branch"
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: "Checkout Source Code"
+        uses: actions/checkout@v2
+      
+      - name: Setup Variables
+        id: setup
+        run: |
+          echo '::set-output name=branch::$(git branch --show-current)'
+          echo '::set-output name=version::$(date +%Y.%m.%d.%H%M)'
+
+      - name: Generate Semantic Version
+        id: semantic-version
+        uses: PaulHatch/semantic-version@v2.1.1
+        with:
+          branch: master
+          tag_prefix: v
+          # a string which, if present in a git commit, indicates that a change represents a major (breaking) change
+          #major_pattern: # default is (MAJOR)
+          # a string which, if present in a git commit, indicates that a change represents a minor (feature) change
+          #minor_pattern: # default is (MINOR)
+          # Pattern to use when formatting output version
+          #format: # default is ${major}.${minor}.${patch}
+          # Path to check for changes. If any changes are detected in the path the 'changed' output will true. Enter multiple paths separated by spaces.
+          #change_path: # optional
+      
+      - name: Create a Release
+        uses: actions/create-release@v1.1.1
+        with:
+          tag_name: v${{ steps.setup.output.version }}-${{ steps.setup.output.branch }}
+          release_name: Release ${{ steps.setup.output.version }}-${{ steps.setup.output.branch }}
+          #body: # optional          
+          draft: true
+          prerelease: ${{contains(steps.setup.output.branch, 'dev')}}
