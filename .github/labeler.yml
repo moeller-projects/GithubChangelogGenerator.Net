@@ -6,3 +6,5 @@ test:
   - src/**/*Tests.cs
 source:
   - src/**/*
+workflow:
+  - .github
