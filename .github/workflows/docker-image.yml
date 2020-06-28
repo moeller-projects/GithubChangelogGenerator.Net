@@ -3,7 +3,9 @@ name: Docker Image CI
 on:
   push:
     branches: [ master, dev ]
+    tags: v*
   pull_request:
+    tags: v*
     branches: [ master, dev ]
 
 jobs:
@@ -43,8 +45,8 @@ jobs:
         repository: lukasmoeller/github-changelog-generator-net
         tags: lts #${{ steps.datetime-version.output.version }},${{ steps.semantic-version.output.version }},latest,lts
         tag_with_ref: true
-        #path: .
-        dockerfile: /src/GithubChangelogGenerator.Net/Dockerfile
+        path: .
+        dockerfile: src/GithubChangelogGenerator.Net/Dockerfile
         always_pull: true
         labels: build-date=${{ steps.datetime-version.output.datetime }},name=${{secrets.GITHUB_REPOSITORY}},vcs-url=https://github.com/${{secrets.GITHUB_REPOSITORY}},url=https://getmoeller.com,vendor=Lukas Möller,vcs-ref=${{secrets.GITHUB_SHA}},version=${{ steps.datetime-version.output.version }},description="Docker Image to automatically generate the GitHub changelog"
         add_git_labels: true
