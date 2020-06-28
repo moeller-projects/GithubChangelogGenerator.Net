@@ -38,6 +38,7 @@ jobs:
       - name: Create new version tag
         uses: simpleactions/create-tag@v1.0.0
         with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
           tag: v${{ steps.setup.output.version }}-${{ steps.setup.output.branch }}
           message: added v${{ steps.setup.output.version }}-${{ steps.setup.output.branch }}
       
