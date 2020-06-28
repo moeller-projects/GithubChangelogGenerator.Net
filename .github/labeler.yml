@@ -1,0 +1,8 @@
+repo:
+  - ./*
+docker:
+  - src/GithubChangelogGenerator.Net/Dockerfile
+test:
+  - src/**/*Tests.cs
+source:
+  - any: ['src/**/*']
