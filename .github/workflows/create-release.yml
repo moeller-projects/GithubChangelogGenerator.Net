@@ -34,6 +34,12 @@ jobs:
           #format: # default is ${major}.${minor}.${patch}
           # Path to check for changes. If any changes are detected in the path the 'changed' output will true. Enter multiple paths separated by spaces.
           #change_path: # optional
+          
+      - name: Create new version tag
+        uses: simpleactions/create-tag@v1.0.0
+        with:
+          tag: v${{ steps.setup.output.version }}-${{ steps.setup.output.branch }}
+          message: added v${{ steps.setup.output.version }}-${{ steps.setup.output.branch }}
       
       - name: Create a Release
         uses: actions/create-release@v1.1.1
